@@ -1,11 +1,10 @@
 # registration page
-import datetime
 from tkinter import *
 from tkinter import messagebox
 import mysql.connector
 from PIL import Image, ImageTk
 from tkinter.ttk import Combobox
-from datetime import datetime, timedelta, time, date
+from datetime import datetime
 
 registering_screen = Tk()
 registering_screen.geometry("700x900")
@@ -21,8 +20,22 @@ canvas.create_image(150, 5, anchor=N, image=img_logo)
 lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
                                          database='Lifechoices_Online', auth_plugin='mysql_native_password')
 my_cursor = lifechoices_db.cursor()
-time = datetime.time()
-date = datetime.date()
+# time = datetime.time()
+# date = datetime.date()
+
+# combo box
+group = StringVar(registering_screen)
+group_list = ['Student', 'Admin', 'Guest']
+group_selector = Combobox(registering_screen, textvariable=group.set, font=("Arial", 13), width=19)
+group_selector.set("Select One")
+group_selector['values'] = group_list
+group_selector['state'] = 'readonly'
+group_selector.place(relx=0.55, rely=0.17)
+
+current_date = datetime.now().date().strftime("%Y-%m-%d")
+current_time = datetime.now().time().strftime("%H:%M:%S")
+# then used mycursor.execute to put the values in the columns
+
 
 class Registration(object):
     def __init__(self):
@@ -31,14 +44,6 @@ class Registration(object):
         self.heading.place(relx=0.08, rely=0.12)
         self.combobox_label = Label(registering_screen, text="Group:", fg="white", bg="#000", font=("Arial", 15))
         self.combobox_label.place(relx=0.08, rely=0.17)
-        # combo box
-        self.option = StringVar(registering_screen)
-        self.option.set("Select One")
-        self.option_combolist = ['Student', 'Admin', 'Guest']
-        self.option_selector = Combobox(registering_screen, textvariable=self.option.set, font=("Arial", 13), width=19)
-        self.option_selector['values'] = self.option_combolist
-        self.option_selector['state'] = 'readonly'
-        self.option_selector.place(relx=0.55, rely=0.17)
         # labels and entries
         # name
         self.name_label = Label(registering_screen, text="Name:", fg="white", bg="#000", font=("Arial", 15))
@@ -94,7 +99,7 @@ class Registration(object):
         self.nextOfKin_contact_label.place(relx=0.08, rely=0.81)
         self.nextOfKin_contact_entry = Entry(registering_screen, font=("Arial", 13))
         self.nextOfKin_contact_entry.place(relx=0.55, rely=0.81)
-
+        # self.
         # buttons
         register_btn = Button(registering_screen, text="Register", padx=15, pady=10, borderwidth=5, fg="black",
                               bg="#71f72a",
@@ -127,23 +132,54 @@ class Registration(object):
             messagebox.showinfo("Entry Error", "Please ensure that your passwords entered, correspond.")
         else:
             try:
-                signIn_time = datetime.time(self)
-                signIn_date = datetime.date(self)
-                data = "INSERT INTO Students (stud_id, stud_name, stud_surname, stud_contact, stud_sign_in_date, " \
-                       "stud_sign_in_time stud_password) VALUES (%s, %s, %s, %s, %s)"
-                val = (self.id_entry.get(),  self.name_entry.get(), self.surname_entry.get(),  self.contact_entry.get(),
-                       self.signIn_time, self.signIn_date, self.password_entry.get())
-                my_cursor.execute(data, val)
-                lifechoices_db.commit()
-                next_of_kin_data = "INSERT INTO Next_Of_Kin (admin_id, stud_id, visitor_id, next_of_kin_name, " \
-                                   "next_of_kin_surname, next_of_kin_contact VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                next_of_kin_val = ("N/A", self.id_entry.get(), "N/A", self.nextOfKin_name_entry.get(),
-                                   self.nextOfKin_surname_entry.get(), self.nextOfKin_contact_entry.get())
-                my_cursor.execute(next_of_kin_data, next_of_kin_val)
-                lifechoices_db.commit()
-                messagebox.showinfo("Welcome", "Please note that you have successfully registered!")
-                registering_screen.destroy()
-                import main
+                if group_selector.get() == 'Student':
+                    data = "INSERT INTO Students VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                    val = (self.id_entry.get(),  self.name_entry.get(), self.surname_entry.get(),
+                           self.contact_entry.get(), current_date, current_time, self.password_entry.get())
+                    next_of_kin_data = "INSERT INTO Next_Of_Kin (stud_id, next_of_kin_name, " \
+                                       "next_of_kin_surname, next_of_kin_contact) VALUES (%s, %s, %s, %s)"
+                    next_of_kin_val = (self.id_entry.get(), self.nextOfKin_name_entry.get(),
+                                       self.nextOfKin_surname_entry.get(), self.nextOfKin_contact_entry.get())
+                    my_cursor.execute(data, val)
+                    my_cursor.execute(next_of_kin_data, next_of_kin_val)
+                    lifechoices_db.commit()
+                    messagebox.showinfo("Welcome", "Please note that you have successfully registered!")
+                    registering_screen.destroy()
+                    import main
+                elif group_selector == 'Admin':
+                    # signIn_time = datetime.time(self)
+                    # signIn_date = datetime.date(self)
+                    data = "INSERT INTO Admin (admin_id, admin_name, admin_surname, admin_contact, " \
+                           "admin_sign_in_date, admin_sign_in_time, admin_password) VALUES (%s, %s, %s, %s, %s)"
+                    val = (self.id_entry.get(), self.name_entry.get(), self.surname_entry.get(),
+                           self.contact_entry.get(), current_date, current_time, self.password_entry.get())
+                    my_cursor.execute(data, val)
+                    lifechoices_db.commit()
+                    next_of_kin_data = "INSERT INTO Next_Of_Kin (admin_id, stud_id, visitor_id, next_of_kin_name, " \
+                                       "next_of_kin_surname, next_of_kin_contact VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                    next_of_kin_val = (self.id_entry.get(), "N/A", "N/A", self.nextOfKin_name_entry.get(),
+                                       self.nextOfKin_surname_entry.get(), self.nextOfKin_contact_entry.get())
+                    my_cursor.execute(next_of_kin_data, next_of_kin_val)
+                    lifechoices_db.commit()
+                    messagebox.showinfo("Welcome", "Please note that you have successfully registered!")
+                    registering_screen.destroy()
+                elif group_selector == 'Visitor':
+                    # signIn_time = datetime.time(self)
+                    # signIn_date = datetime.date(self)
+                    data = "INSERT INTO Visitors (visitor_id, visitor_name, visitor_surname, visitor_contact, " \
+                           "visitor_sign_in_date, visitor_sign_in_time, visitor_password) VALUES (%s, %s, %s, %s, %s)"
+                    val = (self.id_entry.get(), self.name_entry.get(), self.surname_entry.get(),
+                           self.contact_entry.get(), current_date, current_time, self.password_entry.get())
+                    my_cursor.execute(data, val)
+                    lifechoices_db.commit()
+                    next_of_kin_data = "INSERT INTO Next_Of_Kin (admin_id, stud_id, visitor_id, next_of_kin_name, " \
+                                       "next_of_kin_surname, next_of_kin_contact VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                    next_of_kin_val = ("N/A", "N/A", self.id_entry.get(), self.nextOfKin_name_entry.get(),
+                                       self.nextOfKin_surname_entry.get(), self.nextOfKin_contact_entry.get())
+                    my_cursor.execute(next_of_kin_data, next_of_kin_val)
+                    lifechoices_db.commit()
+                    messagebox.showinfo("Welcome", "Please note that you have successfully registered!")
+                    registering_screen.destroy()
             except ValueError:
                 messagebox.showinfo("Entry Error", "Please ensure that your passwords entered, correspond.")
                 self.name_entry.delete(0, END)

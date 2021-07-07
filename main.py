@@ -4,11 +4,20 @@ import mysql.connector
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter.ttk import Combobox
+from datetime import datetime
 
 login_screen = Tk()
 login_screen.geometry("800x900")
 login_screen.config(bg="#3556e8")
 login_screen.title("Login Page")
+
+
+def admin_page(event):
+    import admin
+    login_screen.destroy()
+
+
+login_screen.bind("<Control-a>", admin_page)
 
 # adding image
 canvas = Canvas(login_screen, width=620, height=300, bg="#3c5be6", borderwidth=0, highlightthickness=0)
@@ -18,7 +27,7 @@ canvas.create_image(310, -15, anchor=N, image=img_logo)
 
 # combo box
 group = StringVar(login_screen)
-group_list = ['Student', 'Admin', 'Guest']
+group_list = ['Student', 'Admin', 'Visitor']
 group_selector = Combobox(login_screen, textvariable=group.set, font=("Arial", 13), width=19)
 group_selector.set("Select One")
 group_selector['values'] = group_list
@@ -30,6 +39,9 @@ lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermEN
                                          database='Lifechoices_Online', auth_plugin='mysql_native_password')
 my_cursor = lifechoices_db.cursor()
 
+# for exact date and time
+current_date = datetime.now().date().strftime("%Y-%m-%d")
+current_time = datetime.now().time().strftime("%H:%M:%S")
 
 class Login(object):
     def __init__(self):
@@ -71,31 +83,74 @@ class Login(object):
         self.clear_btn.place(relx=0.1, rely=0.77)
 
     def login(self):
-        if group_selector.get() == "":
+        if group_selector.get() == "Select One":
             messagebox.showinfo("Entry Error", "Please select your group.")
-        # if self.id_entry == "":
-        #     messagebox.showinfo("Entry Error", "Please enter your ID number.")
-        # if self.password_entry == "":
-        #     messagebox.showinfo("Entry Error", "Please enter your password.")
+        elif self.id_entry.get() == "":
+            messagebox.showinfo("Entry Error", "Please enter your ID number.")
+        elif self.password_entry.get() == "":
+            messagebox.showinfo("Entry Error", "Please enter your password.")
         # if self.id_entry == "" or self.password_entry == "":
         #     messagebox.showinfo("Entry Error", "Please enter your details.")
-        elif group_selector.get() == "Student":
-            xy = my_cursor.execute('SELECT * FROM Students')
-            for i in my_cursor:
-                # if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
-                #     messagebox.showinfo("Congratulations", "Successful login")
-                #     break
-                if self.id_entry.get() == i[0] and self.password_entry.get() != i[6]:
-                    messagebox.showerror("Error", "Password is incorrect")
-                    self.password_entry.delete(0, END)
-                elif self.id_entry.get() != i[0] and self.password_entry.get() == i[6]:
-                    messagebox.showerror("Error", "ID number is incorrect")
-                    self.id_entry.delete(0, END)
-                elif self.id_entry.get() != i[0] or self.password_entry.get() != i[6]:
-                    messagebox.showerror("Error", "ID number and/or password is incorrect")
-                else:
-                    if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
-                        messagebox.showinfo("Congratulations", "Successful login")
+        else:
+            try:
+                if group_selector.get() == "Student":
+                    my_cursor.execute('SELECT * FROM Students')
+                    for i in my_cursor:
+                        # if i.type == group_selector.MOUSEBUTTONDOWN:
+                            # if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
+                            #     messagebox.showinfo("Congratulations", "Successful login")
+                            #     break
+                        if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
+                            # my_cursor.execute('UPDATE Students SET stud_sign_in_date= "' + current_date + '"' \
+                            #                   ' WHERE id ="' + self.id_entry.get() + '"')
+                            messagebox.showinfo("Congratulations", "Successful login")
+                            self.password_entry.delete(0, END)
+                        elif self.id_entry.get() != i[0] and self.password_entry.get() == i[6]:
+                            messagebox.showerror("Error", "ID number is incorrect")
+                            self.id_entry.delete(0, END)
+                        # elif self.id_entry.get() != i[0] or self.password_entry.get() != i[6]:
+                        #     messagebox.showerror("Error", "ID number and/or password is incorrect")
+                        else:
+                            if self.id_entry.get() == i[0] and self.password_entry.get() != i[6]:
+                                messagebox.showerror("Error", "Password is incorrect")
+                elif group_selector.get() == "Admin":
+                    xy = my_cursor.execute('SELECT * FROM Admin')
+                    for i in my_cursor:
+                        # if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
+                        #     messagebox.showinfo("Congratulations", "Successful login")
+                        #     break
+                        if self.id_entry.get() == i[0] and self.password_entry.get() != i[6]:
+                            messagebox.showerror("Error", "Password is incorrect")
+                            self.password_entry.delete(0, END)
+                        elif self.id_entry.get() != i[0] and self.password_entry.get() == i[6]:
+                            messagebox.showerror("Error", "ID number is incorrect")
+                            self.id_entry.delete(0, END)
+                        elif self.id_entry.get() != i[0] or self.password_entry.get() != i[6]:
+                            messagebox.showerror("Error", "ID number and/or password is incorrect")
+                        else:
+                            if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
+                                messagebox.showinfo("Congratulations", "Successful login")
+                elif group_selector.get() == "Visitor":
+                    xy = my_cursor.execute('SELECT * FROM Visitors')
+                    for i in my_cursor:
+                        # if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
+                        #     messagebox.showinfo("Congratulations", "Successful login")
+                        #     break
+                        if self.id_entry.get() == i[0] and self.password_entry.get() != i[6]:
+                            messagebox.showerror("Error", "Password is incorrect")
+                            self.password_entry.delete(0, END)
+                        elif self.id_entry.get() != i[0] and self.password_entry.get() == i[6]:
+                            messagebox.showerror("Error", "ID number is incorrect")
+                            self.id_entry.delete(0, END)
+                        elif self.id_entry.get() != i[0] or self.password_entry.get() != i[6]:
+                            messagebox.showerror("Error", "ID number and/or password is incorrect")
+                        else:
+                            if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
+                                messagebox.showinfo("Congratulations", "Successful login")
+            except AttributeError:
+                pass
+            group_selector.bind("<<ComboboxSelected>>", self.login)
+
             # elif xy == []:
             #     messagebox.showinfo("User Error", "user odes not exist, please register")
 
@@ -136,7 +191,7 @@ class Login(object):
         #             self.id_entry.delete(0, END)
         #             self.password_entry.delete(0, END)
 
-    group_selector.bind("<<ComboboxSelected>>", login)
+    # group_selector.bind("<<ComboboxSelected>>", login)
 
     def registering(self):
         messagebox.showinfo("New User", "You will be redirected to enter your credentials!")
