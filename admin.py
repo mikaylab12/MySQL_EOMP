@@ -2,10 +2,92 @@ from tkinter import *
 from tkinter import ttk
 import mysql.connector
 from tkinter import messagebox
+from PIL import Image, ImageTk
+import rsaidnumber
+
+# admin_login = Tk()
+# admin_login.title("Admin Login")
+# admin_login.config(bg="#1a1a18")
+# admin_login.geometry("800x900")
+
+# # declaring text variables
+# name = StringVar()
+# person_id = IntVar()
+# surname = StringVar()
+# password = IntVar()
+# contact = IntVar()
+
+# connecting mysql to python
+lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
+                                         database='Lifechoices_Online', auth_plugin='mysql_native_password')
+my_cursor = lifechoices_db.cursor()
+#
+# # adding image
+# canvas = Canvas(admin_login, width=400, height=400, bg="#1a1a18", borderwidth=0, highlightthickness=0)
+# canvas.place(relx=0.25, rely=0.05)
+# img_logo = ImageTk.PhotoImage(Image.open("lclogo.png"))
+# canvas.create_image(200, 5, anchor=N, image=img_logo)
+#
+# admin_heading = Label(admin_login, text="Welcome Admin!", bg="#1a1a18", fg="white", font=("Arial", 30, "bold"))
+# admin_heading.place(relx=0.3, rely=0.47)
+#
+#
+# class AdminLoginPage(object):
+#     def __init__(self):
+#         self.instruction_heading = Label(admin_login, text="Please enter your:", fg="#7bfa05",
+#                                          bg="#1a1a18", font=("Arial", 21, "bold"))
+#         self.instruction_heading.place(relx=0.3, rely=0.58)
+#         # labels and entries
+#         self.id_label = Label(admin_login, text="ID number:", fg="white", bg="#1a1a18", font=("Arial", 15,
+#                                                                                               "bold"))
+#         self.id_label.place(relx=0.3, rely=0.65)
+#         self.id_entry = Entry(admin_login, font=("Arial", 14))
+#         self.id_entry.place(relx=0.45, rely=0.65)
+#
+#         self.password_label = Label(admin_login, text="Password:", fg="white", bg="#1a1a18", font=("Arial", 15,
+#                                                                                                     "bold"))
+#         self.password_label.place(relx=0.3, rely=0.72)
+#         self.password_entry = Entry(admin_login, font=("Arial", 14), show='*')
+#         self.password_entry.place(relx=0.45, rely=0.72)
+#         # buttons
+#         self.login_btn = Button(admin_login, text="Login", padx=30, pady=10, borderwidth=5, fg="black", bg="#71f72a",
+#                                 font=("Arial", 13, "bold"), command=self.login)
+#         self.login_btn.place(relx=0.55, rely=0.8)
+#
+#         self.clear_btn = Button(admin_login, text="Clear", padx=30, pady=10, borderwidth=5, fg="black",
+#                                 bg="#fff", font=("Arial", 13, "bold"), command=self.clear)
+#         self.clear_btn.place(relx=0.3, rely=0.8)
+#
+#     def login(self):
+#         try:
+#             my_cursor.execute('SELECT * FROM Admin')
+#             for i in my_cursor:
+#                 if int(self.id_entry.get()) == int(i[0]) and self.password_entry.get() == i[6]:
+#                     messagebox.showinfo("Congratulations", "Successful login")
+#                     admin_login.destroy()
+#                     self.admin_page()
+#                 elif int(self.id_entry.get()) != int(i[0]) and self.password_entry.get() == i[6]:
+#                     messagebox.showerror("Error", "ID number is incorrect")
+#                     self.id_entry.delete(0, END)
+#                 else:
+#                     if int(self.id_entry.get()) == int(i[0]) and self.password_entry.get() != i[6]:
+#                         messagebox.showerror("Error", "Password is incorrect")
+#                         self.password_entry.delete(0, END)
+#         except ValueError:
+#             messagebox.showerror("Error", "Please ensure that your ID consists of digits")
+#
+#     def clear(self):
+#         self.id_entry.delete(0, END)
+#         self.password_entry.delete(0, END)
+#         # group_selector.set("Select One")
+#
+#     def admin_page(self):
 admin_page = Tk()
-admin_page.title("Admin")
-admin_page.config(bg="green")
+admin_page.title("Admin Login")
+admin_page.config(bg="white")
 admin_page.geometry("800x900")
+frame1 = Frame(admin_page, bg="grey", highlightbackground="white", highlightthickness=5, width=700, height=500)
+frame1.place(relx=0.06, rely=0.23)
 
 # declaring text variables
 name = StringVar()
@@ -14,41 +96,43 @@ surname = StringVar()
 password = IntVar()
 contact = IntVar()
 
+# adding image
+access_canvas = Canvas(admin_page, width=200, height=150, bg="white", borderwidth=0, highlightthickness=0)
+access_canvas.place(relx=0.05, rely=0.05)
+access_img_logo = ImageTk.PhotoImage(Image.open("Life-Choices-150x150.jpg"))
+access_canvas.create_image(120, 0, anchor=N, image=access_img_logo)
+
 # combo box
-group = StringVar(admin_page)
-group_list = ['Student', 'Admin', 'Visitor']
-group_selector = ttk.Combobox(admin_page, textvariable=group.set, font=("Arial", 13), width=19)
+group = StringVar(frame1)
+group_list = ['Student', 'Admin', 'Visitor', 'Next Of Kin']
+group_selector = ttk.Combobox(frame1, textvariable=group.set, font=("Arial", 13), width=19)
 group_selector.set("Select One")
 group_selector['values'] = group_list
 group_selector['state'] = 'readonly'
-group_selector.place(relx=0.1, rely=0.15)
-
-# connecting mysql to python
-lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
-                                         database='Lifechoices_Online', auth_plugin='mysql_native_password')
-my_cursor = lifechoices_db.cursor()
-
-frame1 = Frame(admin_page, bg="grey", highlightbackground="white", highlightthickness=5, width=400, height=300)
-frame1.place(relx=0.1, rely=0.2)
+group_selector.place(relx=0.07, rely=0.1)
 
 
-class Admin(object):
+class AdminAccess(object):
     def __init__(self):
-        self.heading = Label(admin_page, text="Admin Page", font=("Arial", 26, "bold"), bg="green")
-        self.heading.place(x=210, y=10)
-
-        search_btn = Button(admin_page, text="Search", command=self.group_treeview, pady=10, padx=15, borderwidth=5)
-        search_btn.place(relx=0.2, rely=0.15)
+        # group_selector[0] = student
+        # group_selector[2] = visitor
+        # group_selector[1] = admin
+        # group_selector[3] = next_of_kin
+        self.search_btn = Button(frame1, text="Search", command=self.group_treeview, pady=10, padx=15,
+                                 borderwidth=5)
+        self.search_btn.place(relx=0.4, rely=0.07)
+        self.heading = Label(admin_page, text="Admin Page", font=("Arial", 26, "bold"), bg="white", fg="black")
+        self.heading.place(relx=0.32, rely=0.13)
 
         # treeview
         self.treeview_table = ttk.Treeview(frame1, columns=(1, 2, 3), show="headings")
-        self.treeview_table.pack()
+        self.treeview_table.place(relx=0.065, rely=0.2)
         self.treeview_table.heading(1, text="ID Number")
         self.treeview_table.heading(2, text="Name")
         self.treeview_table.heading(3, text="Surname")
 
-        delete_entries = Button(admin_page, text="Delete", bg="white", fg="black", command=self.delete)
-        delete_entries.place(relx=0.3, rely=0.8)
+        # delete_entries = Button(admin_page, text="Delete", bg="white", fg="black", command=self.delete)
+        # delete_entries.place(relx=0.3, rely=0.8)
 
         # # students treeview
         # stud_heading = Label(admin_page, bg="grey", fg="white", font=("Arial", 20, "bold"), text="Students:")
@@ -105,11 +189,20 @@ class Admin(object):
         #     stud_treeview_table.insert("", 'end', values=i)
 
     def group_treeview(self):
+        # group_selector[0] = student
+        # group_selector[2] = visitor
+        # group_selector[1] = admin
+        # group_selector[3] = next_of_kin
+        # function to delete previous data
+        for i in self.treeview_table.get_children():
+            self.treeview_table.delete(i)
         if group_selector.get() == 'Student':
+            # while group_selector.get():
+                # for i in self.treeview_table.get_children():
+                #     self.treeview_table.delete(i)
             lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
                                                      database='Lifechoices_Online', auth_plugin='mysql_native_password')
             my_cursor = lifechoices_db.cursor()
-
             sql = "SELECT stud_id, stud_name, stud_surname FROM Students"
             my_cursor.execute(sql)
 
@@ -118,6 +211,7 @@ class Admin(object):
 
             for i in rows:
                 self.treeview_table.insert("", 'end', values=i)
+
         elif group_selector.get() == 'Admin':
             lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
                                                      database='Lifechoices_Online', auth_plugin='mysql_native_password')
@@ -144,54 +238,70 @@ class Admin(object):
 
             for i in rows:
                 self.treeview_table.insert("", 'end', values=i)
+        elif group_selector.get() == 'Next Of Kin':
+            lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
+                                                     database='Lifechoices_Online', auth_plugin='mysql_native_password')
+            my_cursor = lifechoices_db.cursor()
+
+            sql = "SELECT visitor_id, visitor_name, visitor_surname FROM Visitors"
+            my_cursor.execute(sql)
+
+            rows = my_cursor.fetchall()
+            total = my_cursor.rowcount
+
+            for i in rows:
+                self.treeview_table.insert("", 'end', values=i)
+
+        group_selector.bind("<<ComboboxSelected>>", self.group_treeview)
 
     def delete(self):
         selected_item = self.treeview_table.selection()[0]
-        uid = self.treeview_table.item(selected_item)['values'][0]
+        uuid = self.treeview_table.item(selected_item)['values'][0]
         remove = "DELETE FROM Students WHERE id_number = %s"
-        selected_data = (uid,)
+        selected_data = (uuid)
         my_cursor.execute(remove, selected_data)
         lifechoices_db.commit()
         self.treeview_table.delete(selected_item)
         messagebox.showinfo("Success", "Student Data Removed")
 
-    # def insert(self):
-    #     pass
-    # def insert_data(self):
-    #     self.frame = Frame(admin_page, width=400, height=320, bg="black")
-    #     self.frame.place(x=100, y=150)
-    #     l1 = Label(self.frame, text="name", width=8)
-    #     e1 = Entry(self.frame, textvariable=name, width=25)
-    #     l1.place(x=50, y=30)
-    #     e1.place(x=170, y=30)
-    #
-    #     l2 = Label(self.frame, text="ID number", width=8)
-    #     e2 = Entry(self.frame, textvariable=person_id, width=25)
-    #     l2.place(x=50, y=70)
-    #     e2.place(x=170, y=70)
-    #
-    #     l3 = Label(self.frame, text="Surname", width=8)
-    #     l3.place(x=50, y=110)
-    #     e3 = Entry(self.frame, textvariable=surname, width=25)
-    #     e3.place(x=170, y=110)
-    #
-    #     l4 = Label(self.frame, text="Phone number", width=11)
-    #     l4.place(x=50, y=150)
-    #     e4 = Entry(self.frame, textvariable=contact, width=25)
-    #     e4.place(x=170, y=150)
-    #     e4.delete(0, END)
-    #
-    #     l5 = Label(self.frame, text="Password", width=8)
-    #     l5.place(x=50, y=190)
-    #     e5 = Entry(self.frame, textvariable=password, width=25)
-    #     e5.place(x=170, y=190)
-    #
-    #     submit_btn = Button(self.frame, text="submit", command=self.add_data)
-    #     submit_btn.configure(bg='white', fg='black')
-    #     submit_btn.place(x=100, y=280)
-    #     cancel_btn = Button(self.frame, text="cancel", command=self.frame.destroy)
-    #     cancel_btn.configure(bg='white', fg='black')
-    #     cancel_btn.place(x=240, y=280)
+    def insert(self):
+        pass
+
+    def insert_data(self):
+        self.frame = Frame(admin_page, width=400, height=320, bg="black")
+        self.frame.place(x=100, y=150)
+        l1 = Label(self.frame, text="name", width=8)
+        e1 = Entry(self.frame, textvariable=name, width=25)
+        l1.place(x=50, y=30)
+        e1.place(x=170, y=30)
+
+        l2 = Label(self.frame, text="ID number", width=8)
+        e2 = Entry(self.frame, textvariable=person_id, width=25)
+        l2.place(x=50, y=70)
+        e2.place(x=170, y=70)
+
+        l3 = Label(self.frame, text="Surname", width=8)
+        l3.place(x=50, y=110)
+        e3 = Entry(self.frame, textvariable=surname, width=25)
+        e3.place(x=170, y=110)
+
+        l4 = Label(self.frame, text="Phone number", width=11)
+        l4.place(x=50, y=150)
+        e4 = Entry(self.frame, textvariable=contact, width=25)
+        e4.place(x=170, y=150)
+        e4.delete(0, END)
+
+        l5 = Label(self.frame, text="Password", width=8)
+        l5.place(x=50, y=190)
+        e5 = Entry(self.frame, textvariable=password, width=25)
+        e5.place(x=170, y=190)
+
+        # submit_btn = Button(self.frame, text="submit", command=self.add_data)
+        # submit_btn.configure(bg='white', fg='black')
+        # submit_btn.place(x=100, y=280)
+        # cancel_btn = Button(self.frame, text="cancel", command=self.frame.destroy)
+        # cancel_btn.configure(bg='white', fg='black')
+        # cancel_btn.place(x=240, y=280)
     # def add_data(self):
     #     frame = Frame(administrator, width=400, height=320, bg="black")
     #     frame.place(x=100, y=150)
@@ -256,9 +366,12 @@ class Admin(object):
     # cancel_btn.configure(bg='white', fg='black')
     # cancel_btn.place(x=240, y=280)
 
-
     def destroy(self):
-        frame1.destroy()
+        MsgBox = messagebox.askquestion('Exit Application','Are you sure you want to exit the application',
+                                        icon='warning')
+        if MsgBox == 'yes':
+            self.destroy()
+            frame1.destroy()
         # button
         cancel_btn = Button(frame1, text="cancel", command=self.destroy)
         cancel_btn.configure(bg='white', fg='black')
@@ -300,6 +413,7 @@ class Admin(object):
         self.surname_ent.insert(0, value[2])
         e4.insert(0, value[3])
         e5.insert(0, value[4])
+
         def update_data():
             # nonlocal self.name_ent, self.id_ent, self.surname_ent, e4, e5, cur_item, value
             student_name = name.get()
@@ -318,22 +432,27 @@ class Admin(object):
             e4.delete(0, END)
             e5.delete(0, END)
             frame1.destroy()
+            update_entries = Button(admin_page, text="Update", bg="white", fg="black", command=self.selected_data)
+            update_entries.place(relx=0.7, rely=0.7)
 
-        submit_btn = Button(frame1, text="submit", command=update_data)
+        submit_btn = Button(self.frame, text="submit", command=self.add_data)
         submit_btn.configure(bg='white', fg='black')
         submit_btn.place(x=100, y=280)
-        cancel_btn = Button(frame1, text="cancel", command=frame1.destroy)
+        cancel_btn = Button(self.frame, text="cancel", command=self.frame.destroy)
         cancel_btn.configure(bg='white', fg='black')
         cancel_btn.place(x=240, y=280)
 
+        delete_entries = Button(admin_page, text="delete", bg="white", fg="black", command=lambda: self.destroy)
+        delete_entries.place(relx=0.15, rely=0.7)
+        insert_entries = Button(admin_page, text="insert", bg="white", fg="black", command=lambda: self.add_data)
+        insert_entries.place(relx=0.4, rely=0.7)
+        # update_entries = Button(admin_page, text="Update", bg="white", fg="black", command=self.selected_data)
+        # update_entries.place(relx=0.7, rely=0.7)
 
-# delete_entries = Button(administrator, text="delete", bg="white", fg="black", command=lambda: destroy(table))
-# delete_entries.place(x=50, y=450)
-# insert_entries = Button(administrator, text="insert", bg="white", fg="black", command=lambda: add_data(table))
-# insert_entries.place(x=150, y=450)
-        update_entries = Button(admin_page, text="Update", bg="white", fg="black", command=self.selected_data)
-        update_entries.place(x=250, y=450)
 
-
-admin_control = Admin()
+admin_control = AdminAccess()
 admin_page.mainloop()
+#
+#
+# admin_logging_in = AdminLoginPage()
+# admin_login.mainloop()
