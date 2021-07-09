@@ -12,9 +12,11 @@ login_screen.geometry("800x900")
 login_screen.config(bg="#3556e8")
 login_screen.title("Login Page")
 
+
 def admin_page(event):
     login_screen.destroy()
     import admin
+
 
 login_screen.bind("<Control-a>", admin_page)
 
@@ -36,11 +38,12 @@ group_selector.place(relx=0.35, rely=0.65)
 # connecting mysql to python
 lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
                                          database='Lifechoices_Online', auth_plugin='mysql_native_password')
-my_cursor = lifechoices_db.cursor()
+my_cursor = lifechoices_db.cursor(buffered=True)
 
 # for exact date and time
 current_date = datetime.now().date().strftime("%Y-%m-%d")
 current_time = datetime.now().time().strftime("%H:%M:%S")
+
 
 class Login(object):
     def __init__(self):
@@ -82,114 +85,78 @@ class Login(object):
         self.clear_btn.place(relx=0.1, rely=0.77)
 
     def login(self):
-        try:
-            if group_selector.get() == "Select One":
-                messagebox.showinfo("Entry Error", "Please select your group.")
-            elif self.id_entry.get() == "":
-                messagebox.showinfo("Entry Error", "Please enter your ID number.")
-            elif self.password_entry.get() == "":
-                messagebox.showinfo("Entry Error", "Please enter your password.")
-            # if self.id_entry == "" or self.password_entry == "":
-            #     messagebox.showinfo("Entry Error", "Please enter your details.")
-            else:
-                try:
-                    if group_selector.get() == "Student":
-                        my_cursor.execute('SELECT * FROM Students')
-                        for i in my_cursor:
-                            if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
-                                my_cursor.execute("UPDATE Students SET stud_sign_in_date = .format(current_date) "
-                                                  " WHERE stud_id ='" + self.id_entry.get() + " '")
-                                lifechoices_db.commit()
-                                messagebox.showinfo("Congratulations", "Successful login")
-                                self.password_entry.delete(0, END)
-                            elif self.id_entry.get() != i[0] and self.password_entry.get() == i[6]:
-                                messagebox.showerror("Error", "ID number is incorrect")
-                                self.id_entry.delete(0, END)
-                            # elif self.id_entry.get() != i[0] or self.password_entry.get() != i[6]:
-                            #     messagebox.showerror("Error", "ID number and/or password is incorrect")
-                            else:
-                                if self.id_entry.get() == i[0] and self.password_entry.get() != i[6]:
-                                    messagebox.showerror("Error", "Password is incorrect")
-                    # elif group_selector.get() == "Admin":
-                    #     my_cursor.execute('SELECT * FROM Admin')
-                    #     for i in my_cursor:
-                    #         if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
-                    #             messagebox.showinfo("Congratulations", "Successful login")
-                    #             self.password_entry.delete(0, END)
-                    #         elif self.id_entry.get() != i[0] and self.password_entry.get() == i[6]:
-                    #             messagebox.showerror("Error", "ID number is incorrect")
-                    #             self.id_entry.delete(0, END)
-                    #         else:
-                    #             if self.id_entry.get() == i[0] and self.password_entry.get() != i[6]:
-                    #                 messagebox.showerror("Error", "Password is incorrect")
-                    elif group_selector.get() == "Visitor":
-                        my_cursor.execute('SELECT * FROM Visitors')
-                        for i in my_cursor:
-                            if self.id_entry.get() == i[0] and self.password_entry.get() == i[6]:
-                                messagebox.showinfo("Congratulations", "Successful login")
-                                self.password_entry.delete(0, END)
-                            elif self.id_entry.get() != i[0] and self.password_entry.get() == i[6]:
-                                messagebox.showerror("Error", "ID number is incorrect")
-                                self.id_entry.delete(0, END)
-                            else:
-                                if self.id_entry.get() == i[0] and self.password_entry.get() != i[6]:
-                                    messagebox.showerror("Error", "Password is incorrect")
-                except TypeError:
-                    raise messagebox.showerror("Error", "Hi.")
-        except TypeError:
-            messagebox.showerror("Error", "Please select the correct group.")
         group_selector.bind("<<ComboboxSelected>>", self.login)
+        if group_selector.get() == "Select One":
+            messagebox.showinfo("Entry Error", "Please select your group.")
+        elif self.id_entry.get() == "":
+            messagebox.showinfo("Entry Error", "Please enter your ID number.")
+        elif self.password_entry.get() == "":
+            messagebox.showinfo("Entry Error", "Please enter your password.")
+        else:
+            try:
+                if group_selector.get() == "Student":
+                    my_cursor.execute('SELECT * FROM Students')
+                    for i in my_cursor:
+                        if str(self.id_entry.get()) == i[0] and str(self.password_entry.get()) == i[6]:
+                            self.sign_in()
+                        elif str(self.id_entry.get()) != i[0] and str(self.password_entry.get()) == i[6]:
+                            messagebox.showerror("Error", "ID number is incorrect")
+                            self.id_entry.delete(0, END)
+                        else:
+                            if str(self.id_entry.get()) == i[0] and str(self.password_entry.get()) != i[6]:
+                                messagebox.showerror("Error", "Password is incorrect")
+                                self.password_entry.delete(0, END)
+                elif group_selector.get() == "Visitor":
+                    my_cursor.execute('SELECT * FROM Visitors')
+                    for i in my_cursor:
+                        if str(self.id_entry.get()) == i[0] and str(self.password_entry.get()) == i[6]:
+                            self.sign_in()
+                        elif str(self.id_entry.get()) != i[0] and str(self.password_entry.get()) == i[6]:
+                            messagebox.showerror("Error", "ID number is incorrect")
+                            self.id_entry.delete(0, END)
+                        else:
+                            if str(self.id_entry.get()) == i[0] and str(self.password_entry.get()) != i[6]:
+                                messagebox.showerror("Error", "Password is incorrect")
+                                self.password_entry.delete(0, END)
+            except TypeError:
+                pass
+
+    # function to execute sign in date and sign in time
+    def sign_in(self):
+        if group_selector.get() == 'Student':
+            date_data = "UPDATE Students SET stud_sign_in_date=%s WHERE stud_id='" + self.id_entry.get() \
+                        + "' AND stud_password = '" + self.password_entry.get() + "'"
+            date_val = [current_date]
+            time_data = "UPDATE Students SET stud_sign_in_time=%s WHERE stud_id='" + self.id_entry.get() \
+                        + "' AND stud_password = '" + self.password_entry.get() + "'"
+            time_val = [current_time]
+            my_cursor.execute(date_data, date_val)
+            my_cursor.execute(time_data, time_val)
+            lifechoices_db.commit()
+            messagebox.showinfo("Congratulations", "Successful login")
+            login_screen.destroy()
+            import sign_out
+        elif group_selector.get() == 'Visitor':
+            date_data = "UPDATE Visitors SET visitor_sign_in_date=%s WHERE visitor_id='" + self.id_entry.get() \
+                   + "' AND visitor_password = '" + self.password_entry.get() + "'"
+            date_val = [current_date]
+            time_data = "UPDATE Visitors SET visitor_sign_in_time=%s WHERE visitor_id='" + self.id_entry.get() \
+                   + "' AND visitor_password = '" + self.password_entry.get() + "'"
+            time_val = [current_time]
+            my_cursor.execute(date_data, date_val)
+            my_cursor.execute(time_data, time_val)
+            lifechoices_db.commit()
+            messagebox.showinfo("Congratulations", "Successful login")
+            login_screen.destroy()
+            import sign_out
 
     def clear(self):
         self.id_entry.delete(0, END)
         self.password_entry.delete(0, END)
         group_selector.set("Select One")
-        # elif xy == []:
-        #     messagebox.showinfo("User Error", "user odes not exist, please register")
-
-        # def comb1_selected():
-        #     date = StringVar()
-        #     global comb2
-        #     comb2 = Combobox(login_screen, textvariable=date)
-        #     comb2.pack()
-        #     comb2.config(state=DISABLED)
-        #
-        #     if (self.option_selector.current() != -1):
-        #         print('current: ' + str(self.option_selector.current()))  # current: 0
-        #         print('get: ' + self.option_selector.get())  # get: Jan
-        #
-        #         comb2.config(state='normal')
-        #         if self.option_selector.get() == 'Student':
-        #             comb2.config(values=('J'))
-        # self.option_selector.bind("<<ComboboxSelected>>", login)
-
-        # lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
-        #                                          database='Lifechoices_Online', auth_plugin='mysql_native_password')
-        # my_cursor = lifechoices_db.cursor()
-        # xy = my_cursor.execute('SELECT * FROM login')
-        # if self.id_entry == "":
-        #     messagebox.showinfo("Entry Error", "Please enter your ID number.")
-        # if self.password_entry == "":
-        #     messagebox.showinfo("Entry Error", "Please enter your password.")
-        # else:
-        #     for i in my_cursor:
-        #         if self.id_entry.get() == i[0] and self.password_entry.get() == i[1]:
-        #             messagebox.showinfo("Successful", "Login Successful!\nEnjoy your day.")
-        #             login_screen.destroy()
-        #             # import menu_page
-        #             break
-        #     for i in my_cursor:
-        #         if self.id_entry.get() != i[0] and self.password_entry.get() != i[1]:
-        #             messagebox.showinfo("Error", "Access denied!\nPlease visit reception.")
-        #             self.id_entry.delete(0, END)
-        #             self.password_entry.delete(0, END)
-
-    # group_selector.bind("<<ComboboxSelected>>", login)
 
     def register_screen(self):
-        # messagebox.showinfo("New User", "You will be redirected to enter your credentials!")
         login_screen.destroy()
-        # import registration
         # registration page
         registering_screen = Tk()
         registering_screen.geometry("700x900")
@@ -254,7 +221,7 @@ class Login(object):
                 self.password_entry.place(relx=0.55, rely=0.46)
 
                 self.confirm_label = Label(registering_screen, text="Please confirm your password:", fg="white",
-                                           bg="#000",font=("Arial", 15))
+                                           bg="#000", font=("Arial", 15))
                 self.confirm_label.place(relx=0.08, rely=0.52)
                 self.confirm_entry = Entry(registering_screen, font=("Arial", 13), show='*')
                 self.confirm_entry.place(relx=0.55, rely=0.52)
@@ -279,7 +246,6 @@ class Login(object):
                 self.nextOfKin_contact_label.place(relx=0.08, rely=0.81)
                 self.nextOfKin_contact_entry = Entry(registering_screen, font=("Arial", 13))
                 self.nextOfKin_contact_entry.place(relx=0.55, rely=0.81)
-                # self.
                 # buttons
                 register_btn = Button(registering_screen, text="Register", padx=15, pady=10, borderwidth=5, fg="black",
                                       bg="#71f72a",
@@ -295,23 +261,23 @@ class Login(object):
             def validating_inputs(self):
                 if self.name_entry == "":
                     messagebox.showinfo("Entry Error", "Please enter your name.")
-                if self.surname_entry == "":
+                elif self.surname_entry == "":
                     messagebox.showinfo("Entry Error", "Please enter your surname.")
-                if self.id_entry == "":
+                elif self.id_entry == "":
                     messagebox.showinfo("Entry Error", "Please enter your ID number.")
-                if self.password_entry == "":
+                elif self.password_entry == "":
                     messagebox.showinfo("Entry Error", "Please enter your password.")
-                if self.confirm_entry == "":
+                elif self.confirm_entry == "":
                     messagebox.showinfo("Entry Error", "Please confirm your password.")
-                if self.nextOfKin_name_entry == "":
+                elif self.nextOfKin_name_entry == "":
                     messagebox.showinfo("Entry Error", "Please enter your Next of Kin's name.")
-                if self.nextOfKin_surname_entry == "":
+                elif self.nextOfKin_surname_entry == "":
                     messagebox.showinfo("Entry Error", "Please enter your Next of Kin's surname.")
                 elif self.confirm_entry.get() != self.password_entry.get():
                     messagebox.showinfo("Entry Error", "Please ensure that your passwords entered, correspond.")
                 else:
                     try:
-                        def age_calc():
+                        def valid_id_check():
                             try:
                                 user_id = self.id_entry.get()
                                 while user_id:
@@ -355,35 +321,10 @@ class Login(object):
                                                     "Please enter a valid cellphone number, for your Next of Kin's "
                                                     "contact details, that only consists of digits. ")
 
-                        if age_calc() == 1 and cell_num_validation() == 1 and next_of_kin_cell() == 1:
+                        if valid_id_check() == 1 and cell_num_validation() == 1 and next_of_kin_cell() == 1:
                             if reg_group_selector.get() == 'Select One':
                                 messagebox.showinfo('Error',
                                                     "Please select the appropriate group.")
-
-                            # if self.name_entry == "":
-                            #     messagebox.showinfo("Entry Error", "Please enter your name.")
-                            # if self.surname_entry == "":
-                            #     messagebox.showinfo("Entry Error", "Please enter your surname.")
-                            # if self.id_entry == "":
-                            #     messagebox.showinfo("Entry Error", "Please enter your ID number.")
-                            # if self.contact_entry == "":
-                            #     messagebox.showinfo("Entry Error", "Please enter your contact number.")
-                            # if self.password_entry == "":
-                            #     messagebox.showinfo("Entry Error", "Please enter your password.")
-                            # if self.confirm_entry == "":
-                            #     messagebox.showinfo("Entry Error", "Please confirm your password.")
-                            # # if self.nextOfKin_name_entry == "" or self.nextOfKin_surname_entry == "" or self.nextOfKin_contact_entry == "":
-                            # #     messagebox.showinfo("Next OF Kin Entry Error", "Please ensure that your have filled in all the "
-                            # #                                                    "required details of your next of Kin.")
-                            # if self.confirm_entry.get() != self.password_entry.get():
-                            #     messagebox.showinfo("Entry Error", "Please ensure that your passwords entered, correspond.")
-                            # else:
-                            #     if self.nextOfKin_name_entry == "":
-                            #         messagebox.showinfo("Entry Error", "Please enter your Next of Kin's name.")
-                            #     if self.nextOfKin_surname_entry == "":
-                            #         messagebox.showinfo("Entry Error", "Please enter your Next of Kin's surname.")
-                            #     if self.nextOfKin_contact_entry == "":
-                            #         messagebox.showinfo("Entry Error", "Please enter your Next of Kin's contact number.")
                             try:
                                 if reg_group_selector.get() == 'Student':
                                     stud_data = "INSERT INTO Students VALUES (%s, %s, %s, %s, %s, %s, %s)"
@@ -416,8 +357,6 @@ class Login(object):
                                     messagebox.showinfo("Welcome",
                                                         "Please note that you have successfully registered as Admin!")
                                 elif reg_group_selector.get() == 'Visitor':
-                                    # signIn_time = datetime.time(self)
-                                    # signIn_date = datetime.date(self)
                                     visi_data = "INSERT INTO Visitors VALUES (%s, %s, %s, %s, %s, %s, %s)"
                                     visi_val = (self.id_entry.get(), self.name_entry.get(), self.surname_entry.get(),
                                                 self.contact_entry.get(), current_date, current_time,
@@ -452,62 +391,7 @@ class Login(object):
                 self.nextOfKin_surname_entry.delete(0, END)
                 self.nextOfKin_contact_entry.delete(0, END)
 
-                # def age_calc():
-                #     try:
-                #         # current date
-                #         # current_date = datetime.today()
-                #         # in order to validate id number entered
-                #         id_number = rsaidnumber.parse(self.id_entry.get())
-                #         valid_id = id_number
-                #         # while valid_id:
-                #         #     dob = id_number.date_of_birth
-                #         #      current_age = int((current_date - dob) // timedelta(days=365.25))
-                #             # if int(current_age) >= 18:
-                #             #     return 1
-                #             # else:
-                #             #     messagebox.showinfo("Underage", "You are too young to play.\nPlease try again in " + str(
-                #             #         18 - int(current_age)) + " years")
-                #     except ValueError:
-                #         messagebox.showinfo("Invalid ID", "\nPlease enter a valid South African ID number that consists of 13"
-                #                             " digits.")
-                #
-                # def cell_num_validation():
-                #     try:
-                #         tel = (self.contact_entry.get())
-                #         if int(len(tel)) == 10:
-                #             return 1
-                #         elif int(len(tel)) > 10:
-                #             messagebox.showinfo('Error', 'Please ensure that your cellphone number contains only 10 digits.')
-                #         elif int(len(tel)) < 10:
-                #             messagebox.showinfo('Error', 'Please note that you have not entered 10 digits '
-                #                                 'for your contact number')
-                #     except ValueError:
-                #         messagebox.showinfo('Error', 'Please enter a valid cellphone number that only consists of digits. ')
-                #
-                # def next_of_kin_cell():
-                #     try:
-                #         next_of_kin_tel = (self.contact_entry.get())
-                #         if int(len(next_of_kin_tel)) == 10:
-                #             return 1
-                #         elif int(len(next_of_kin_tel)) > 10:
-                #             messagebox.showinfo('Error', 'Please ensure that your cellphone number contains only 10 digits.')
-                #         elif int(len(next_of_kin_tel)) < 10:
-                #             messagebox.showinfo('Error', 'Please note that you have not entered 10 digits '
-                #                                 'for your contact number')
-                #     except ValueError:
-                #         messagebox.showinfo('Error', 'Please enter a valid cellphone number that only consists of digits. ')
-                #
-                # if age_calc() == 1 and cell_num_validation() == 1 and next_of_kin_cell() == 1:
-                #     fh = open("Player_info.txt", "a")
-                #     fh.write("\nName and Surname: " + self.name_entry.get() + '\n')
-                #     fh.write("ID Number: " + self.id_entry.get() + '\n')
-                #     fh.write("Email: " + self.email_entry.get() + '\n')
-                #     fh.write("Number: " + self.telephone_number_entry.get() + '\n')
-                #     fh.write("Residential Address: " + self.residential_address_entry.get() + "\n")
-                #     fh.close()
-                #     messagebox.showinfo("Valid Details", "Let's Play!")
-                #     login_screen.destroy()
-                #     self.screen_2()
+
         registering_user = Registration()
         registering_screen.mainloop()
 
