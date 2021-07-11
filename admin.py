@@ -69,7 +69,7 @@ class AdminLoginPage(object):
             results = my_cursor.fetchall()
             if results == []:
                 messagebox.showerror("Login Unsuccessful",
-                                     "The ID number entered is incorrect or does not exist in our database.\nIf the issue persists, please see reception!")
+                                     "The ID number entered is incorrect or does not exist in our Admin database.\n\nIf the issue persists, please see reception!")
             elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) == results[0][6]:
                 self.admin_sign_in()
             elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) != results[0][6]:
@@ -269,7 +269,6 @@ class AdminLoginPage(object):
                             self.treeview_table.insert("", 'end', values=i)
                     else:
                         messagebox.showerror("Selection Error", "Please select the group.")
-                    group_selector.bind("<<ComboboxSelected>>", self.group_treeview)
                 except TypeError:
                     pass
 
@@ -290,7 +289,7 @@ class AdminLoginPage(object):
                         for x in rows:
                             self.nokTreeview_table.insert("", 'end', values=x)
                         messagebox.showinfo("Students ONLY",
-                                            "Please note that you are ONLY able to edit information with a student ID!\nAny other user updates will be null and void.")
+                                            "Please note that you are ONLY able to edit information with a student ID!\n\nAny other user updates will be null and void.")
                     elif group_selector.get() == 'Admin':
                         lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020',
                                                                  host='127.0.0.1',
@@ -303,7 +302,7 @@ class AdminLoginPage(object):
                         for x in rows:
                             self.nokTreeview_table.insert("", 'end', values=x)
                         messagebox.showinfo("Admin ONLY",
-                                            "Please note that you are ONLY able to edit information with an admin ID!\nAny other user updates will be null and void.")
+                                            "Please note that you are ONLY able to edit information with an admin ID!\n\nAny other user updates will be null and void.")
                     elif group_selector.get() == 'Visitor':
                         lifechoices_db = mysql.connector.connect(user='lifechoices', password='8-2fermENt2020', host='127.0.0.1',
                                                                  database='Lifechoices_Online', auth_plugin='mysql_native_password')
@@ -316,7 +315,6 @@ class AdminLoginPage(object):
                         messagebox.showinfo("Visitors ONLY", "Please note that you are ONLY able to edit information with a visitor ID!\nAny other user updates will be null and void.")
                     else:
                         messagebox.showerror("Selection Error", "Please select the group")
-                    group_selector.bind("<<ComboboxSelected>>", self.nok_treeview)
                 except TypeError:
                     pass
 
@@ -332,8 +330,8 @@ class AdminLoginPage(object):
                     my_cursor.execute(remove_student, selected_data)
                     lifechoices_db.commit()
                     self.treeview_table.delete(item)
-                    self.nokTreeview_table.delete(item)
-                    messagebox.showinfo("Success", "Student Data Removed.")
+                    # self.nokTreeview_table.delete(item)
+                    messagebox.showinfo("Success", "Student Data Removed.\nPlease click the 'Next of Kin Search' button to view the updates.")
                 elif group_selector.get() == 'Admin':
                     item = self.treeview_table.selection()[0]
                     selected_item = self.treeview_table.item(item)['values'][0]
@@ -344,8 +342,8 @@ class AdminLoginPage(object):
                     my_cursor.execute(remove_admin, selected_data)
                     lifechoices_db.commit()
                     self.treeview_table.delete(item)
-                    self.nokTreeview_table.delete(item)
-                    messagebox.showinfo("Success", "Admin Data Removed.")
+                    # self.nokTreeview_table.delete(item)
+                    messagebox.showinfo("Success", "Admin Data Removed.\nPlease click the 'Next of Kin Search' button to view the updates.")
                 elif group_selector.get() == 'Visitor':
                     item = self.treeview_table.selection()[0]
                     selected_item = self.treeview_table.item(item)['values'][0]
@@ -356,8 +354,8 @@ class AdminLoginPage(object):
                     my_cursor.execute(remove_visitor, selected_data)
                     lifechoices_db.commit()
                     self.treeview_table.delete(item)
-                    self.nokTreeview_table.delete(item)
-                    messagebox.showinfo("Success", "Visitor Data Removed.")
+                    # self.nokTreeview_table.delete(item)
+                    messagebox.showinfo("Success", "Visitor Data Removed.\nPlease click the 'Next of Kin Search' button to view the updates.")
                 group_selector.bind("<<ComboboxSelected>>", self.delete)
 
             # function to create frame in order to insert users
@@ -441,132 +439,143 @@ class AdminLoginPage(object):
                     nok_name = nextOfKin_name.get()
                     nok_surname = nextOfKin_surname.get()
                     nok_contact = nextOfKin_contact.get()
-                    try:
-                        if user_name == "" or user_surname == "" or nok_name == "" or nok_surname == "":
-                            messagebox.showerror("Entry Error", "Please fill in all the required information")
-                        # id validation
-                        def valid_id_check():
-                            try:
-                                valid_user_id = user_id
-                                while valid_user_id:
-                                    id_number = rsaidnumber.parse(valid_user_id)
-                                    valid_id = id_number
-                                    while valid_id:
+                    # if user_name == "" or user_surname == "" or nok_name == "" or nok_surname == "":
+                    #     messagebox.showerror("Entry Error", "Please fill in all the required information")
+                    if nameent.get() == "":
+                        messagebox.showerror("Entry Error", "Please enter the user's name.")
+                    elif surnameent.get() == "":
+                        messagebox.showerror("Entry Error", "Please enter the user's surname.")
+                    elif passwordent.get() == "":
+                        messagebox.showerror("Entry Error", "Please enter the user's password.")
+                    elif nextOfKin_nameent.get() == "":
+                        messagebox.showerror("Entry Error", "Please enter the user's Next of Kin's name.")
+                    elif nextOfKin_surnameent.get() == "":
+                        messagebox.showerror("Entry Error", "Please enter the user's Next of Kin's surname.")
+                    else:
+                        try:
+                            # id validation
+                            def valid_id_check():
+                                try:
+                                    valid_user_id = user_id
+                                    while valid_user_id:
+                                        id_number = rsaidnumber.parse(valid_user_id)
+                                        valid_id = id_number
+                                        while valid_id:
+                                            return 1
+                                except ValueError:
+                                    messagebox.showerror("Invalid ID", "\nPlease enter a valid South African ID "
+                                                                      "number that consists of 13"
+                                                                      " digits.")
+
+                            # cell validation
+                            def cell_num_validation():
+                                try:
+                                    tel = user_contact
+                                    if int(len(tel)) == 10:
                                         return 1
-                            except ValueError:
-                                messagebox.showerror("Invalid ID", "\nPlease enter a valid South African ID "
-                                                                  "number that consists of 13"
-                                                                  " digits.")
-
-                        # cell validation
-                        def cell_num_validation():
-                            try:
-                                tel = user_contact
-                                if int(len(tel)) == 10:
-                                    return 1
-                                elif int(len(tel)) > 10:
+                                    elif int(len(tel)) > 10:
+                                        messagebox.showerror('Error',
+                                                            'Please ensure that your cellphone number contains only 10 digits.')
+                                    elif int(len(tel)) < 10:
+                                        messagebox.showerror('Error', 'Please note that you have not entered 10 digits '
+                                                                     'for your contact number')
+                                except ValueError:
                                     messagebox.showerror('Error',
-                                                        'Please ensure that your cellphone number contains only 10 digits.')
-                                elif int(len(tel)) < 10:
-                                    messagebox.showerror('Error', 'Please note that you have not entered 10 digits '
-                                                                 'for your contact number')
-                            except ValueError:
-                                messagebox.showerror('Error',
-                                                    'Please enter a valid cellphone number that only consists of digits. ')
+                                                        'Please enter a valid cellphone number that only consists of digits. ')
 
-                        # next of kin contact validation function
-                        def next_of_kin_cell():
-                            try:
-                                next_of_kin_tel = nok_contact
-                                if int(len(next_of_kin_tel)) == 10:
-                                    return 1
-                                elif int(len(next_of_kin_tel)) > 10:
-                                    messagebox.showerror('Error', "Please ensure that your Next of Kin's cellphone "
-                                                                 "number contains only 10 digits.")
-                                elif int(len(next_of_kin_tel)) < 10:
-                                    messagebox.showerror('Error', "Please note that you have not entered 10 digits "
-                                                                 "for your Next of Kin's contact number")
-                            except ValueError:
-                                messagebox.showerror('Error',
-                                                    "Please enter a valid cellphone number, for your Next of Kin's "
-                                                    "contact details, that only consists of digits. ")
+                            # next of kin contact validation function
+                            def next_of_kin_cell():
+                                try:
+                                    next_of_kin_tel = nok_contact
+                                    if int(len(next_of_kin_tel)) == 10:
+                                        return 1
+                                    elif int(len(next_of_kin_tel)) > 10:
+                                        messagebox.showerror('Error', "Please ensure that your Next of Kin's cellphone "
+                                                                     "number contains only 10 digits.")
+                                    elif int(len(next_of_kin_tel)) < 10:
+                                        messagebox.showerror('Error', "Please note that you have not entered 10 digits "
+                                                                     "for your Next of Kin's contact number")
+                                except ValueError:
+                                    messagebox.showerror('Error',
+                                                        "Please enter a valid cellphone number, for your Next of Kin's "
+                                                        "contact details, that only consists of digits. ")
 
-                        if valid_id_check() == 1 and cell_num_validation() == 1 and next_of_kin_cell() == 1:
-                            try:
-                                if insert_group_selector.get() == 'Student':
-                                    my_cursor.execute(
-                                        "INSERT INTO Students(stud_id, stud_name, stud_surname, stud_contact, stud_sign_in_date, stud_sign_in_time, stud_password) "
-                                        "VALUES(%s, %s, %s, %s,%s, %s, %s)",
-                                        (user_id, user_name, user_surname, user_contact, current_date, current_time,
-                                         user_password))
-                                    my_cursor.execute(
-                                        "INSERT INTO Next_Of_Kin(stud_id, next_of_kin_name, next_of_kin_surname, next_of_kin_contact) "
-                                        "VALUES(%s, %s, %s, %s)",
-                                        (user_id, nok_name, nok_surname, nok_contact))
-                                    lifechoices_db.commit()
-                                    self.treeview_table.insert('', 'end', text='', values=(user_id, user_name, user_surname, user_contact, current_date, current_time,
-                                                                                           user_password))
-                                    messagebox.showinfo("Success", "Student Registered!")
-                                    nameent.delete(0, END)
-                                    ident.delete(0, END)
-                                    surnameent.delete(0, END)
-                                    contactent.delete(0, END)
-                                    passwordent.delete(0, END)
-                                    nextOfKin_nameent.delete(0, END)
-                                    nextOfKin_surnameent.delete(0, END)
-                                    nextOfKin_contactent.delete(0, END)
-                                    insert_frame.destroy()
-                                elif insert_group_selector.get() == 'Admin':
-                                    my_cursor.execute("INSERT INTO Admin(admin_id, admin_name, admin_surname, admin_contact, admin_sign_in_date, admin_sign_in_time, admin_password) "
-                                                      "VALUES(%s, %s, %s, %s,%s, %s, %s)",(user_id, user_name, user_surname, user_contact, current_date, current_time,
-                                                                                              user_password))
-                                    my_cursor.execute(
-                                        "INSERT INTO Next_Of_Kin(admin_id, next_of_kin_name, next_of_kin_surname, next_of_kin_contact) "
-                                        "VALUES(%s, %s, %s, %s)",
-                                        (user_id, nok_name, nok_surname, nok_contact))
-                                    lifechoices_db.commit()
-                                    self.treeview_table.insert('', 'end', text='', values=(user_id, user_name, user_surname, user_contact, current_date, current_time,
-                                                                                           user_password))
-                                    messagebox.showinfo("Success", "Admin Registered!")
-                                    nameent.delete(0, END)
-                                    ident.delete(0, END)
-                                    surnameent.delete(0, END)
-                                    contactent.delete(0, END)
-                                    passwordent.delete(0, END)
-                                    nextOfKin_nameent.delete(0, END)
-                                    nextOfKin_surnameent.delete(0, END)
-                                    nextOfKin_contactent.delete(0, END)
-                                    insert_frame.destroy()
-                                elif insert_group_selector.get() == "Visitor":
-                                    my_cursor.execute(
-                                        "INSERT INTO Visitors(visitor_id, visitor_name, visitor_surname, visitor_contact, visitor_sign_in_date, visitor_sign_in_time, visitor_password) "
-                                        "VALUES(%s, %s, %s, %s,%s, %s, %s)",
-                                        (user_id, user_name, user_surname, user_contact, current_date, current_time,
-                                         user_password))
-                                    my_cursor.execute(
-                                        "INSERT INTO Next_Of_Kin(visitor_id, next_of_kin_name, next_of_kin_surname, next_of_kin_contact) "
-                                        "VALUES(%s, %s, %s, %s)",
-                                        (user_id, nok_name, nok_surname, nok_contact))
-                                    lifechoices_db.commit()
-                                    self.treeview_table.insert('', 'end', text='', values=(
-                                    user_id, user_name, user_surname, user_contact, current_date, current_time,
-                                    user_password))
-                                    messagebox.showinfo("Success", "Visitor Registered!")
-                                    nameent.delete(0, END)
-                                    ident.delete(0, END)
-                                    surnameent.delete(0, END)
-                                    contactent.delete(0, END)
-                                    passwordent.delete(0, END)
-                                    nextOfKin_nameent.delete(0, END)
-                                    nextOfKin_surnameent.delete(0, END)
-                                    nextOfKin_contactent.delete(0, END)
-                                    insert_frame.destroy()
-                                else:
-                                    messagebox.showerror("Selection Error", "Please select a group.")
-                            except TypeError:
-                                pass
-                    except ValueError:
-                        messagebox.showerror("Error", "Please ensure the name and surname fields only consist of letters and not digits.")
+                            if valid_id_check() == 1 and cell_num_validation() == 1 and next_of_kin_cell() == 1:
+                                try:
+                                    if insert_group_selector.get() == 'Student':
+                                        my_cursor.execute(
+                                            "INSERT INTO Students(stud_id, stud_name, stud_surname, stud_contact, stud_sign_in_date, stud_sign_in_time, stud_password) "
+                                            "VALUES(%s, %s, %s, %s,%s, %s, %s)",
+                                            (user_id, user_name, user_surname, user_contact, current_date, current_time,
+                                             user_password))
+                                        my_cursor.execute(
+                                            "INSERT INTO Next_Of_Kin(stud_id, next_of_kin_name, next_of_kin_surname, next_of_kin_contact) "
+                                            "VALUES(%s, %s, %s, %s)",
+                                            (user_id, nok_name, nok_surname, nok_contact))
+                                        lifechoices_db.commit()
+                                        self.treeview_table.insert('', 'end', text='', values=(user_id, user_name, user_surname, user_contact, current_date, current_time,
+                                                                                               user_password))
+                                        messagebox.showinfo("Success", "Student Registered!")
+                                        nameent.delete(0, END)
+                                        ident.delete(0, END)
+                                        surnameent.delete(0, END)
+                                        contactent.delete(0, END)
+                                        passwordent.delete(0, END)
+                                        nextOfKin_nameent.delete(0, END)
+                                        nextOfKin_surnameent.delete(0, END)
+                                        nextOfKin_contactent.delete(0, END)
+                                        insert_frame.destroy()
+                                    elif insert_group_selector.get() == 'Admin':
+                                        my_cursor.execute("INSERT INTO Admin(admin_id, admin_name, admin_surname, admin_contact, admin_sign_in_date, admin_sign_in_time, admin_password) "
+                                                          "VALUES(%s, %s, %s, %s,%s, %s, %s)",(user_id, user_name, user_surname, user_contact, current_date, current_time,
+                                                                                                  user_password))
+                                        my_cursor.execute(
+                                            "INSERT INTO Next_Of_Kin(admin_id, next_of_kin_name, next_of_kin_surname, next_of_kin_contact) "
+                                            "VALUES(%s, %s, %s, %s)",
+                                            (user_id, nok_name, nok_surname, nok_contact))
+                                        lifechoices_db.commit()
+                                        self.treeview_table.insert('', 'end', text='', values=(user_id, user_name, user_surname, user_contact, current_date, current_time,
+                                                                                               user_password))
+                                        messagebox.showinfo("Success", "Admin Registered!")
+                                        nameent.delete(0, END)
+                                        ident.delete(0, END)
+                                        surnameent.delete(0, END)
+                                        contactent.delete(0, END)
+                                        passwordent.delete(0, END)
+                                        nextOfKin_nameent.delete(0, END)
+                                        nextOfKin_surnameent.delete(0, END)
+                                        nextOfKin_contactent.delete(0, END)
+                                        insert_frame.destroy()
+                                    elif insert_group_selector.get() == "Visitor":
+                                        my_cursor.execute(
+                                            "INSERT INTO Visitors(visitor_id, visitor_name, visitor_surname, visitor_contact, visitor_sign_in_date, visitor_sign_in_time, visitor_password) "
+                                            "VALUES(%s, %s, %s, %s,%s, %s, %s)",
+                                            (user_id, user_name, user_surname, user_contact, current_date, current_time,
+                                             user_password))
+                                        my_cursor.execute(
+                                            "INSERT INTO Next_Of_Kin(visitor_id, next_of_kin_name, next_of_kin_surname, next_of_kin_contact) "
+                                            "VALUES(%s, %s, %s, %s)",
+                                            (user_id, nok_name, nok_surname, nok_contact))
+                                        lifechoices_db.commit()
+                                        self.treeview_table.insert('', 'end', text='', values=(
+                                        user_id, user_name, user_surname, user_contact, current_date, current_time,
+                                        user_password))
+                                        messagebox.showinfo("Success", "Visitor Registered!")
+                                        nameent.delete(0, END)
+                                        ident.delete(0, END)
+                                        surnameent.delete(0, END)
+                                        contactent.delete(0, END)
+                                        passwordent.delete(0, END)
+                                        nextOfKin_nameent.delete(0, END)
+                                        nextOfKin_surnameent.delete(0, END)
+                                        nextOfKin_contactent.delete(0, END)
+                                        insert_frame.destroy()
+                                    else:
+                                        messagebox.showerror("Selection Error", "Please select a group.")
+                                except TypeError:
+                                    pass
+                        except ValueError:
+                            messagebox.showerror("Error", "Please ensure the name and surname fields only consist of letters and not digits.")
                 group_selector.bind("<<ComboboxSelected>>", add_data)
                 ins_submit_btn = Button(insert_frame, text="Submit Insert", command=add_data, bg='green', fg='black', padx=15,
                                         pady=10, borderwidth=5, font=("Arial", 15))
@@ -574,209 +583,183 @@ class AdminLoginPage(object):
 
             # function to create frame for updating USER info in treeview as well as mysql
             def selected_data(self):
-                item = self.treeview_table.focus()
-                value = self.treeview_table.item(item, "values")
-                update_frame = Frame(admin_page, width=600, height=400, bg="black")
-                update_frame.place(relx=0.3, rely=0.2)
-                update_heading = Label(update_frame, text="Update Details:", bg="black", fg="white", font=("Arial", 20, "bold"))
-                update_heading.place(relx=0.05, rely=0.05)
-                name_lbl = Label(update_frame, text="Name:", bg="black", fg="white", font=("Arial", 15))
-                name_lbl.place(relx=0.1, rely=0.2)
-                name_ent = Entry(update_frame, textvariable=name, font=("Arial", 15))
-                name_ent.place(relx=0.45, rely=0.2)
+                try:
+                    item = self.treeview_table.focus()
+                    value = self.treeview_table.item(item, "values")
+                    update_frame = Frame(admin_page, width=600, height=400, bg="black")
+                    update_frame.place(relx=0.3, rely=0.2)
+                    update_heading = Label(update_frame, text="Update Details:", bg="black", fg="white", font=("Arial", 20, "bold"))
+                    update_heading.place(relx=0.05, rely=0.05)
+                    name_lbl = Label(update_frame, text="Name:", bg="black", fg="white", font=("Arial", 15))
+                    name_lbl.place(relx=0.1, rely=0.2)
+                    name_ent = Entry(update_frame, textvariable=name, font=("Arial", 15))
+                    name_ent.place(relx=0.45, rely=0.2)
 
-                id_lbl = Label(update_frame, text="ID number:", bg="black", fg="white", font=("Arial", 15))
-                id_lbl.place(relx=0.1, rely=0.38)
-                id_ent = Entry(update_frame, textvariable=person_id, font=("Arial", 15))
-                id_ent.place(relx=0.45, rely=0.38)
+                    id_lbl = Label(update_frame, text="ID number:", bg="black", fg="white", font=("Arial", 15))
+                    id_lbl.place(relx=0.1, rely=0.38)
+                    id_ent = Entry(update_frame, textvariable=person_id, font=("Arial", 15))
+                    id_ent.place(relx=0.45, rely=0.38)
 
-                surname_lbl = Label(update_frame, text="Surname:", bg="black", fg="white", font=("Arial", 15))
-                surname_lbl.place(relx=0.1, rely=0.29)
-                surname_ent = Entry(update_frame, textvariable=surname, font=("Arial", 15))
-                surname_ent.place(relx=0.45, rely=0.29)
+                    surname_lbl = Label(update_frame, text="Surname:", bg="black", fg="white", font=("Arial", 15))
+                    surname_lbl.place(relx=0.1, rely=0.29)
+                    surname_ent = Entry(update_frame, textvariable=surname, font=("Arial", 15))
+                    surname_ent.place(relx=0.45, rely=0.29)
 
-                contact_lbl = Label(update_frame, text="Phone number:", bg="black", fg="white", font=("Arial", 15))
-                contact_lbl.place(relx=0.1, rely=0.47)
-                contact_ent = Entry(update_frame, textvariable=contact, font=("Arial", 15))
-                contact_ent.place(relx=0.45, rely=0.47)
+                    contact_lbl = Label(update_frame, text="Phone number:", bg="black", fg="white", font=("Arial", 15))
+                    contact_lbl.place(relx=0.1, rely=0.47)
+                    contact_ent = Entry(update_frame, textvariable=contact, font=("Arial", 15))
+                    contact_ent.place(relx=0.45, rely=0.47)
 
-                password_lbl = Label(update_frame, text="Password:", bg="black", fg="white", font=("Arial", 15))
-                password_lbl.place(relx=0.1, rely=0.56)
-                password_ent = Entry(update_frame, textvariable=password, font=("Arial", 15))
-                password_ent.place(relx=0.45, rely=0.56)
+                    password_lbl = Label(update_frame, text="Password:", bg="black", fg="white", font=("Arial", 15))
+                    password_lbl.place(relx=0.1, rely=0.56)
+                    password_ent = Entry(update_frame, textvariable=password, font=("Arial", 15))
+                    password_ent.place(relx=0.45, rely=0.56)
 
-                upd_cancel_btn1 = Button(update_frame, text="Cancel Update", command=lambda: update_frame.destroy(), bg='red', fg='black',
-                                        padx=15, pady=10,
-                                        borderwidth=5)
-                upd_cancel_btn1.place(relx=0.5, rely=0.8)
+                    upd_cancel_btn1 = Button(update_frame, text="Cancel Update", command=lambda: update_frame.destroy(), bg='red', fg='black',
+                                            padx=15, pady=10,
+                                            borderwidth=5)
+                    upd_cancel_btn1.place(relx=0.5, rely=0.8)
 
-                id_ent.insert(0, value[0])
-                name_ent.insert(0, value[1])
-                surname_ent.insert(0, value[2])
-                contact_ent.insert(0, value[3])
-                password_ent.insert(0, value[6])
+                    id_ent.insert(0, value[0])
+                    name_ent.insert(0, value[1])
+                    surname_ent.insert(0, value[2])
+                    contact_ent.insert(0, value[3])
+                    password_ent.insert(0, value[6])
 
-                # function to close update frame
-                def upd_destroy():
-                    MsgBox = messagebox.askquestion('Exit Application', 'Are you sure you want to exit the application?',
-                                                    icon='warning')
-                    if MsgBox == 'yes':
-                        name_ent.delete(0, END)
-                        id_ent.delete(0, END)
-                        surname_ent.delete(0, END)
-                        contact_ent.delete(0, END)
-                        password_ent.delete(0, END)
-                        update_frame.destroy()
-                    else:
-                        messagebox.showinfo('Return', 'Returning to the application.')
-
-                upd_cancel_btn = Button(update_frame, text="Cancel Update", command=upd_destroy, bg='red', fg='black', padx=15, pady=10,
-                                        borderwidth=5)
-                upd_cancel_btn.place(relx=0.5, rely=0.8)
-
-                # function to update data in USER treeview as well as mysql tables
-                def update_data():
-                    nonlocal item, value, name_ent, id_ent, surname_ent, contact_ent, password_ent
-                    user_name = name.get()
-                    user_id = person_id.get()
-                    user_surname = surname.get()
-                    user_password = password.get()
-                    user_contact = contact.get()
-                    try:
-                        if group_selector.get() == "Student":
-                            sql = "UPDATE Students SET stud_id=%s, stud_name=%s, stud_surname=%s, stud_contact=%s , stud_password=%s WHERE stud_id =%s"
-                            val = (user_id, user_name, user_surname, user_contact, user_password, value[0])
-                            my_cursor.execute(sql, val)
-                            lifechoices_db.commit()
-                            messagebox.showinfo("Success",
-                                                "Student Data Updated\nPlease click on the 'Search' button in order to see updates")
+                    # function to close update frame
+                    def upd_destroy():
+                        MsgBox = messagebox.askquestion('Exit Application', 'Are you sure you want to exit the application?',
+                                                        icon='warning')
+                        if MsgBox == 'yes':
                             name_ent.delete(0, END)
                             id_ent.delete(0, END)
                             surname_ent.delete(0, END)
                             contact_ent.delete(0, END)
                             password_ent.delete(0, END)
                             update_frame.destroy()
-                        elif group_selector.get() == "Admin":
-                            sql = "UPDATE Admin SET admin_id=%s, admin_name=%s, admin_surname=%s, admin_contact=%s , admin_password=%s WHERE admin_id =%s"
-                            val = (user_id, user_name, user_surname, user_contact, user_password, value[0])
-                            my_cursor.execute(sql, val)
-                            lifechoices_db.commit()
-                            messagebox.showinfo("Success",
-                                                "Admin Data Updated\nPlease click on the 'Search' button in order to see updates")
-                            name_ent.delete(0, END)
-                            id_ent.delete(0, END)
-                            surname_ent.delete(0, END)
-                            contact_ent.delete(0, END)
-                            password_ent.delete(0, END)
-                            update_frame.destroy()
-                        elif group_selector.get() == "Visitor":
-                            sql = "UPDATE Visitors SET visitor_id=%s, visitor_name=%s, visitor_surname=%s, visitor_contact=%s , visitor_password=%s WHERE visitor_id =%s"
-                            val = (user_id, user_name, user_surname, user_contact, user_password, value[0])
-                            my_cursor.execute(sql, val)
-                            lifechoices_db.commit()
-                            messagebox.showinfo("Success",
-                                                "Visitor Data Updated\nPlease click on the 'Search' button in order to see updates")
-                            name_ent.delete(0, END)
-                            id_ent.delete(0, END)
-                            surname_ent.delete(0, END)
-                            contact_ent.delete(0, END)
-                            password_ent.delete(0, END)
-                            update_frame.destroy()
-                    except TypeError:
-                        pass
-                group_selector.bind("<<ComboboxSelected>>", update_data)
+                        else:
+                            messagebox.showinfo('Return', 'Returning to the application.')
 
-                upd_submit_btn = Button(update_frame, text="Submit Update", command=update_data, bg='green', fg='black',
-                                        padx=15, pady=10, borderwidth=5)
-                upd_submit_btn.place(relx=0.15, rely=0.8)
+                    upd_cancel_btn = Button(update_frame, text="Cancel Update", command=upd_destroy, bg='red', fg='black', padx=15, pady=10,
+                                            borderwidth=5)
+                    upd_cancel_btn.place(relx=0.5, rely=0.8)
+
+                    # function to update data in USER treeview as well as mysql tables
+                    def update_data():
+                        nonlocal item, value, name_ent, id_ent, surname_ent, contact_ent, password_ent
+                        user_name = name.get()
+                        user_id = person_id.get()
+                        user_surname = surname.get()
+                        user_password = password.get()
+                        user_contact = contact.get()
+                        try:
+                            if group_selector.get() == "Student":
+                                sql = "UPDATE Students SET stud_id=%s, stud_name=%s, stud_surname=%s, stud_contact=%s , stud_password=%s WHERE stud_id =%s"
+                                val = (user_id, user_name, user_surname, user_contact, user_password, value[0])
+                                my_cursor.execute(sql, val)
+                                lifechoices_db.commit()
+                                messagebox.showinfo("Success",
+                                                    "Student Data Updated\nPlease click on the 'Search' button in order to see updates")
+                                name_ent.delete(0, END)
+                                id_ent.delete(0, END)
+                                surname_ent.delete(0, END)
+                                contact_ent.delete(0, END)
+                                password_ent.delete(0, END)
+                                update_frame.destroy()
+                            elif group_selector.get() == "Admin":
+                                sql = "UPDATE Admin SET admin_id=%s, admin_name=%s, admin_surname=%s, admin_contact=%s , admin_password=%s WHERE admin_id =%s"
+                                val = (user_id, user_name, user_surname, user_contact, user_password, value[0])
+                                my_cursor.execute(sql, val)
+                                lifechoices_db.commit()
+                                messagebox.showinfo("Success",
+                                                    "Admin Data Updated\nPlease click on the 'Search' button in order to see updates")
+                                name_ent.delete(0, END)
+                                id_ent.delete(0, END)
+                                surname_ent.delete(0, END)
+                                contact_ent.delete(0, END)
+                                password_ent.delete(0, END)
+                                update_frame.destroy()
+                            elif group_selector.get() == "Visitor":
+                                sql = "UPDATE Visitors SET visitor_id=%s, visitor_name=%s, visitor_surname=%s, visitor_contact=%s , visitor_password=%s WHERE visitor_id =%s"
+                                val = (user_id, user_name, user_surname, user_contact, user_password, value[0])
+                                my_cursor.execute(sql, val)
+                                lifechoices_db.commit()
+                                messagebox.showinfo("Success",
+                                                    "Visitor Data Updated\nPlease click on the 'Search' button in order to see updates")
+                                name_ent.delete(0, END)
+                                id_ent.delete(0, END)
+                                surname_ent.delete(0, END)
+                                contact_ent.delete(0, END)
+                                password_ent.delete(0, END)
+                                update_frame.destroy()
+                        except TypeError:
+                            pass
+
+                    upd_submit_btn = Button(update_frame, text="Submit Update", command=update_data, bg='green', fg='black',
+                                            padx=15, pady=10, borderwidth=5)
+                    upd_submit_btn.place(relx=0.15, rely=0.8)
+                except IndexError:
+                    messagebox.showerror('Error', 'Please select the data from the table when trying to update details.')
 
             # function to create frame for updating info in NEXT OF KIN treeview as well as mysql
             def nokSelected_data(self):
-                nok_item = self.nokTreeview_table.focus()
-                nok_value = self.nokTreeview_table.item(nok_item, "values")
-                nokUpd_frame = Frame(admin_page, width=600, height=400, bg="black")
-                nokUpd_frame.place(relx=0.3, rely=0.2)
-                nokUpdate_heading = Label(nokUpd_frame, text="Update Details:", bg="black", fg="white", font=("Arial", 20, "bold"))
-                nokUpdate_heading.place(relx=0.05, rely=0.05)
-                adminId_lbl = Label(nokUpd_frame, text="Admin ID:", bg="black", fg="white", font=("Arial", 15))
-                adminId_lbl.place(relx=0.1, rely=0.2)
-                adminId_ent = Entry(nokUpd_frame, textvariable=adm_id, font=("Arial", 15))
-                adminId_ent.place(relx=0.45, rely=0.2)
+                try:
+                    nok_item = self.nokTreeview_table.focus()
+                    nok_value = self.nokTreeview_table.item(nok_item, "values")
+                    nokUpd_frame = Frame(admin_page, width=600, height=400, bg="black")
+                    nokUpd_frame.place(relx=0.3, rely=0.2)
+                    nokUpdate_heading = Label(nokUpd_frame, text="Update Details:", bg="black", fg="white", font=("Arial", 20, "bold"))
+                    nokUpdate_heading.place(relx=0.05, rely=0.05)
+                    adminId_lbl = Label(nokUpd_frame, text="Admin ID:", bg="black", fg="white", font=("Arial", 15))
+                    adminId_lbl.place(relx=0.1, rely=0.2)
+                    adminId_ent = Entry(nokUpd_frame, textvariable=adm_id, font=("Arial", 15))
+                    adminId_ent.place(relx=0.45, rely=0.2)
 
-                studentId_lbl = Label(nokUpd_frame, text="Student ID:", bg="black", fg="white", font=("Arial", 15))
-                studentId_lbl .place(relx=0.1, rely=0.38)
-                studentId_ent = Entry(nokUpd_frame, textvariable=stud_id, font=("Arial", 15))
-                studentId_ent.place(relx=0.45, rely=0.38)
+                    studentId_lbl = Label(nokUpd_frame, text="Student ID:", bg="black", fg="white", font=("Arial", 15))
+                    studentId_lbl .place(relx=0.1, rely=0.38)
+                    studentId_ent = Entry(nokUpd_frame, textvariable=stud_id, font=("Arial", 15))
+                    studentId_ent.place(relx=0.45, rely=0.38)
 
-                visitorId_lbl = Label(nokUpd_frame, text="Visitor ID:", bg="black", fg="white", font=("Arial", 15))
-                visitorId_lbl.place(relx=0.1, rely=0.29)
-                visitorId_ent = Entry(nokUpd_frame, textvariable=visi_id, font=("Arial", 15))
-                visitorId_ent.place(relx=0.45, rely=0.29)
+                    visitorId_lbl = Label(nokUpd_frame, text="Visitor ID:", bg="black", fg="white", font=("Arial", 15))
+                    visitorId_lbl.place(relx=0.1, rely=0.29)
+                    visitorId_ent = Entry(nokUpd_frame, textvariable=visi_id, font=("Arial", 15))
+                    visitorId_ent.place(relx=0.45, rely=0.29)
 
-                nextOfKin_name_lbl = Label(nokUpd_frame, text="Next Of Kin Name:", bg="black", fg="white", font=("Arial", 15))
-                nextOfKin_name_ent = Entry(nokUpd_frame, textvariable=nextOfKin_name, font=("Arial", 15))
-                nextOfKin_name_lbl.place(relx=0.1, rely=0.47)
-                nextOfKin_name_ent.place(relx=0.45, rely=0.47)
+                    nextOfKin_name_lbl = Label(nokUpd_frame, text="Next Of Kin Name:", bg="black", fg="white", font=("Arial", 15))
+                    nextOfKin_name_ent = Entry(nokUpd_frame, textvariable=nextOfKin_name, font=("Arial", 15))
+                    nextOfKin_name_lbl.place(relx=0.1, rely=0.47)
+                    nextOfKin_name_ent.place(relx=0.45, rely=0.47)
 
-                nextOfKin_surname_lbl = Label(nokUpd_frame, text="Next Of Kin Surname:", bg="black", fg="white",
-                                              font=("Arial", 15))
-                nextOfKin_surname_lbl.place(relx=0.1, rely=0.56)
-                nextOfKin_surname_ent = Entry(nokUpd_frame, textvariable=nextOfKin_surname, font=("Arial", 15))
-                nextOfKin_surname_ent.place(relx=0.45, rely=0.56)
+                    nextOfKin_surname_lbl = Label(nokUpd_frame, text="Next Of Kin Surname:", bg="black", fg="white",
+                                                  font=("Arial", 15))
+                    nextOfKin_surname_lbl.place(relx=0.1, rely=0.56)
+                    nextOfKin_surname_ent = Entry(nokUpd_frame, textvariable=nextOfKin_surname, font=("Arial", 15))
+                    nextOfKin_surname_ent.place(relx=0.45, rely=0.56)
 
-                nextOfKin_contact_lbl = Label(nokUpd_frame, text="Next Of Kin Contact:", bg="black", fg="white",
-                                              font=("Arial", 15))
-                nextOfKin_contact_lbl.place(relx=0.1, rely=0.65)
-                nextOfKin_contact_ent = Entry(nokUpd_frame, textvariable=nextOfKin_contact, font=("Arial", 15))
-                nextOfKin_contact_ent.place(relx=0.45, rely=0.65)
+                    nextOfKin_contact_lbl = Label(nokUpd_frame, text="Next Of Kin Contact:", bg="black", fg="white",
+                                                  font=("Arial", 15))
+                    nextOfKin_contact_lbl.place(relx=0.1, rely=0.65)
+                    nextOfKin_contact_ent = Entry(nokUpd_frame, textvariable=nextOfKin_contact, font=("Arial", 15))
+                    nextOfKin_contact_ent.place(relx=0.45, rely=0.65)
 
-                nokUpd_cancel_btn = Button(nokUpd_frame, text="Cancel Update", command=lambda: nokUpd_frame.destroy(), bg='red',
-                                           fg='black', padx=15,
-                                           pady=10,
-                                           borderwidth=5)
-                nokUpd_cancel_btn.place(relx=0.5, rely=0.8)
+                    nokUpd_cancel_btn = Button(nokUpd_frame, text="Cancel Update", command=lambda: nokUpd_frame.destroy(), bg='red',
+                                               fg='black', padx=15,
+                                               pady=10,
+                                               borderwidth=5)
+                    nokUpd_cancel_btn.place(relx=0.5, rely=0.8)
 
-                adminId_ent.insert(0, nok_value[0])
-                studentId_ent.insert(0, nok_value[1])
-                visitorId_ent.insert(0, nok_value[2])
-                nextOfKin_name_ent.insert(0, nok_value[3])
-                nextOfKin_surname_ent.insert(0, nok_value[4])
-                nextOfKin_contact_ent.insert(0, nok_value[5])
+                    adminId_ent.insert(0, nok_value[0])
+                    studentId_ent.insert(0, nok_value[1])
+                    visitorId_ent.insert(0, nok_value[2])
+                    nextOfKin_name_ent.insert(0, nok_value[3])
+                    nextOfKin_surname_ent.insert(0, nok_value[4])
+                    nextOfKin_contact_ent.insert(0, nok_value[5])
 
-                # function to close update frame
-                def nokUpd_destroy():
-                    MsgBox = messagebox.askquestion('Exit Application', 'Are you sure you want to exit the application?',
-                                                    icon='warning')
-                    if MsgBox == 'yes':
-                        adminId_ent.delete(0, END)
-                        studentId_ent.delete(0, END)
-                        visitorId_ent.delete(0, END)
-                        nextOfKin_name_ent.delete(0, END)
-                        nextOfKin_surname_ent.delete(0, END)
-                        nextOfKin_contact_ent.delete(0, END)
-                        nokUpd_frame.destroy()
-                    else:
-                        messagebox.showinfo('Return', 'Returning to the application')
-
-                nokUpd_cancel_btn = Button(nokUpd_frame, text="Cancel Update", command=nokUpd_destroy, bg='red', fg='black', padx=15,
-                                        pady=10,
-                                        borderwidth=5)
-                nokUpd_cancel_btn.place(relx=0.5, rely=0.8)
-
-                #  fucntion to update NEXT OF KIN treeview and mysql table
-                def upd_nextOfKin():
-                    nonlocal nok_item, nok_value, adminId_ent, studentId_ent, visitorId_ent, nextOfKin_name_ent, nextOfKin_surname_ent, nextOfKin_contact_ent
-                    nok_name = nextOfKin_name.get()
-                    nok_surname = nextOfKin_surname.get()
-                    nok_contact = nextOfKin_contact.get()
-                    try:
-                        if group_selector.get() == "Student":
-                            my_cursor.execute(
-                                "UPDATE Next_Of_Kin SET next_of_kin_name=%s, next_of_kin_surname=%s, next_of_kin_contact=%s WHERE stud_id=%s ",
-                                (nok_name, nok_surname, nok_contact, nok_value[1]))
-                            lifechoices_db.commit()
-                            messagebox.showinfo("Success",
-                                                "Student Next Of Kin Data Updated.\nClick on 'Next of Kin Search' button to see updates.")
+                    # function to close update frame
+                    def nokUpd_destroy():
+                        MsgBox = messagebox.askquestion('Exit Application', 'Are you sure you want to exit the application?',
+                                                        icon='warning')
+                        if MsgBox == 'yes':
                             adminId_ent.delete(0, END)
                             studentId_ent.delete(0, END)
                             visitorId_ent.delete(0, END)
@@ -784,41 +767,72 @@ class AdminLoginPage(object):
                             nextOfKin_surname_ent.delete(0, END)
                             nextOfKin_contact_ent.delete(0, END)
                             nokUpd_frame.destroy()
-                        elif group_selector.get() == "Admin":
-                            my_cursor.execute(
-                                "UPDATE Next_Of_Kin SET next_of_kin_name=%s, next_of_kin_surname=%s, next_of_kin_contact=%s WHERE admin_id=%s ",
-                                (nok_name, nok_surname, nok_contact, nok_value[0]))
-                            lifechoices_db.commit()
-                            messagebox.showinfo("Success",
-                                                "Admin Next Of Kin Data Updated.\nClick on 'Next of Kin Search' button to see updates.")
-                            adminId_ent.delete(0, END)
-                            studentId_ent.delete(0, END)
-                            visitorId_ent.delete(0, END)
-                            nextOfKin_name_ent.delete(0, END)
-                            nextOfKin_surname_ent.delete(0, END)
-                            nextOfKin_contact_ent.delete(0, END)
-                            nokUpd_frame.destroy()
-                        elif group_selector.get() == "Visitor":
-                            my_cursor.execute(
-                                "UPDATE Next_Of_Kin SET next_of_kin_name=%s, next_of_kin_surname=%s, next_of_kin_contact=%s WHERE visitor_id=%s ",
-                                (nok_name, nok_surname, nok_contact, nok_value[2]))
-                            lifechoices_db.commit()
-                            messagebox.showinfo("Success",
-                                                "Visitor Next Of Kin Data Updated.\nClick on 'Next of Kin Search' button to see updates.")
-                            adminId_ent.delete(0, END)
-                            studentId_ent.delete(0, END)
-                            visitorId_ent.delete(0, END)
-                            nextOfKin_name_ent.delete(0, END)
-                            nextOfKin_surname_ent.delete(0, END)
-                            nextOfKin_contact_ent.delete(0, END)
-                            nokUpd_frame.destroy()
-                    except TypeError:
-                        pass
-                group_selector.bind("<<ComboboxSelected>>", upd_nextOfKin)
+                        else:
+                            messagebox.showinfo('Return', 'Returning to the application')
 
-                nokUpd_submit_btn = Button(nokUpd_frame, text="Submit Update", command=upd_nextOfKin, bg='green', fg='black',
-                                           padx=15, pady=10, borderwidth=5)
-                nokUpd_submit_btn.place(relx=0.15, rely=0.8)
+                    nokUpd_cancel_btn = Button(nokUpd_frame, text="Cancel Update", command=nokUpd_destroy, bg='red', fg='black', padx=15,
+                                            pady=10,
+                                            borderwidth=5)
+                    nokUpd_cancel_btn.place(relx=0.5, rely=0.8)
+
+                    #  fucntion to update NEXT OF KIN treeview and mysql table
+                    def upd_nextOfKin():
+                        nonlocal nok_item, nok_value, adminId_ent, studentId_ent, visitorId_ent, nextOfKin_name_ent, nextOfKin_surname_ent, nextOfKin_contact_ent
+                        nok_name = nextOfKin_name.get()
+                        nok_surname = nextOfKin_surname.get()
+                        nok_contact = nextOfKin_contact.get()
+                        try:
+                            if group_selector.get() == "Student":
+                                my_cursor.execute(
+                                    "UPDATE Next_Of_Kin SET next_of_kin_name=%s, next_of_kin_surname=%s, next_of_kin_contact=%s WHERE stud_id=%s ",
+                                    (nok_name, nok_surname, nok_contact, nok_value[1]))
+                                lifechoices_db.commit()
+                                messagebox.showinfo("Success",
+                                                    "Student Next Of Kin Data Updated.\nClick on 'Next of Kin Search' button to see updates.")
+                                adminId_ent.delete(0, END)
+                                studentId_ent.delete(0, END)
+                                visitorId_ent.delete(0, END)
+                                nextOfKin_name_ent.delete(0, END)
+                                nextOfKin_surname_ent.delete(0, END)
+                                nextOfKin_contact_ent.delete(0, END)
+                                nokUpd_frame.destroy()
+                            elif group_selector.get() == "Admin":
+                                my_cursor.execute(
+                                    "UPDATE Next_Of_Kin SET next_of_kin_name=%s, next_of_kin_surname=%s, next_of_kin_contact=%s WHERE admin_id=%s ",
+                                    (nok_name, nok_surname, nok_contact, nok_value[0]))
+                                lifechoices_db.commit()
+                                messagebox.showinfo("Success",
+                                                    "Admin Next Of Kin Data Updated.\nClick on 'Next of Kin Search' button to see updates.")
+                                adminId_ent.delete(0, END)
+                                studentId_ent.delete(0, END)
+                                visitorId_ent.delete(0, END)
+                                nextOfKin_name_ent.delete(0, END)
+                                nextOfKin_surname_ent.delete(0, END)
+                                nextOfKin_contact_ent.delete(0, END)
+                                nokUpd_frame.destroy()
+                            elif group_selector.get() == "Visitor":
+                                my_cursor.execute(
+                                    "UPDATE Next_Of_Kin SET next_of_kin_name=%s, next_of_kin_surname=%s, next_of_kin_contact=%s WHERE visitor_id=%s ",
+                                    (nok_name, nok_surname, nok_contact, nok_value[2]))
+                                lifechoices_db.commit()
+                                messagebox.showinfo("Success",
+                                                    "Visitor Next Of Kin Data Updated.\nClick on 'Next of Kin Search' button to see updates.")
+                                adminId_ent.delete(0, END)
+                                studentId_ent.delete(0, END)
+                                visitorId_ent.delete(0, END)
+                                nextOfKin_name_ent.delete(0, END)
+                                nextOfKin_surname_ent.delete(0, END)
+                                nextOfKin_contact_ent.delete(0, END)
+                                nokUpd_frame.destroy()
+                        except TypeError:
+                            pass
+
+                    nokUpd_submit_btn = Button(nokUpd_frame, text="Submit Update", command=upd_nextOfKin, bg='green', fg='black',
+                                               padx=15, pady=10, borderwidth=5)
+                    nokUpd_submit_btn.place(relx=0.15, rely=0.8)
+                except IndexError:
+                    messagebox.showerror('Error',
+                                         'Please select the data from the table when trying to update details.')
 
             # function to delete data in NEXT OF KIN treeview as well as mysql table
             def nokDelete(self):
@@ -1013,8 +1027,13 @@ class AdminLoginPage(object):
 
             # function for admin to sign out
             def sign_out(self):
-                admin_page.destroy()
-                import sign_out
+                MsgBox = messagebox.askquestion('Exit Application', 'Are you sure you want to exit the application?',
+                                                icon='warning')
+                if MsgBox == 'yes':
+                    admin_page.destroy()
+                    import sign_out
+                else:
+                    messagebox.showinfo('Return', 'Returning to the application')
 
         admin_control = AdminAccess()
         admin_page.mainloop()

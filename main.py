@@ -98,7 +98,7 @@ class Login(object):
                     my_cursor.execute('SELECT * FROM Students WHERE stud_id = "' + self.id_entry.get() + '"')
                     results = my_cursor.fetchall()
                     if results == []:
-                        messagebox.showerror("Login Unsuccessful", "Please double-check the GROUP selected as well as your ID number or register as a new user.\nIf the issue persists, please see reception!")
+                        messagebox.showerror("Login Unsuccessful", "Please double-check the GROUP selected as well as your ID number or register as a new user.\n\nIf the issue persists, please see reception!")
                     elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) == results[0][6]:
                         self.sign_in()
                     elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) != results[0][6]:
@@ -108,7 +108,7 @@ class Login(object):
                     my_cursor.execute('SELECT * FROM Visitors WHERE visitor_id = "' + self.id_entry.get() + '"')
                     results = my_cursor.fetchall()
                     if results == []:
-                        messagebox.showerror("Login Unsuccessful", "Please double-check the GROUP selected as well as your ID number or register as a new user.\nIf the issue persists, please see reception!")
+                        messagebox.showerror("Login Unsuccessful", "Please double-check the GROUP selected as well as your ID number or register as a new user.\n\nIf the issue persists, please see reception!")
                     elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) == results[0][6]:
                         self.sign_in()
                     elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) != results[0][6]:
@@ -352,7 +352,7 @@ class Login(object):
                                     messagebox.showinfo("Signing in", "Please note that you have automatically been signed in.")
                                     import sign_out
                                 elif reg_group_selector.get() == 'Admin':
-                                    adm_data = "INSERT INTO Admin (admin_id, admin_name, admin_surname, admin_contact, admin_sign_in_date, stud_sign_in_time, admin_password) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                                    adm_data = "INSERT INTO Admin (admin_id, admin_name, admin_surname, admin_contact, admin_sign_in_date, admin_sign_in_time, admin_password) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                                     adm_val = (self.id_entry.get(), self.name_entry.get(), self.surname_entry.get(),
                                                self.contact_entry.get(), current_date, current_time,
                                                self.password_entry.get())
@@ -366,6 +366,7 @@ class Login(object):
                                     lifechoices_db.commit()
                                     messagebox.showinfo("Welcome",
                                                         "Please note that you have successfully registered as Admin!")
+                                    registering_screen.destroy()
                                     import admin
                                 elif reg_group_selector.get() == 'Visitor':
                                     visi_data = "INSERT INTO Visitor (visitor_id, visitor_name, visitor_surname, visitor_contact, visitor_sign_in_date, visitor_sign_in_time, visitor_password) VALUES (%s, %s, %s, %s, %s, %s, %s)"
@@ -405,6 +406,7 @@ class Login(object):
                 self.nextOfKin_name_entry.delete(0, END)
                 self.nextOfKin_surname_entry.delete(0, END)
                 self.nextOfKin_contact_entry.delete(0, END)
+                reg_group_selector.set("Select One")
 
         registering_user = Registration()
         registering_screen.mainloop()

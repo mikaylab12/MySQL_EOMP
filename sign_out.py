@@ -86,7 +86,7 @@ class SignOut(object):
                 results = my_cursor.fetchall()
                 if results == []:
                     messagebox.showerror("Login Unsuccessful",
-                                         "Please select the correct group, and/or enter the correct ID number.\nIf the issue persists, please see reception!")
+                                         "Please select the correct group, and/or enter the correct ID number.\n\nIf the issue persists, please see reception!")
                 elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) == results[0][6]:
                     self.sign_out()
                 elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) != results[0][6]:
@@ -97,7 +97,7 @@ class SignOut(object):
                 results = my_cursor.fetchall()
                 if results == []:
                     messagebox.showerror("Login Unsuccessful",
-                                         "Please select the correct group, and/or enter the correct ID number.\nIf the issue persists, please see reception!")
+                                         "Please select the correct group, and/or enter the correct ID number.\n\nIf the issue persists, please see reception!")
                 elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) == results[0][6]:
                     self.sign_out()
                 elif str(self.id_entry.get()) == results[0][0] and str(self.password_entry.get()) != results[0][6]:
@@ -122,6 +122,7 @@ class SignOut(object):
             lifechoices_db.commit()
             messagebox.showinfo('Sign Out successful', 'Enjoy the rest of your day!')
             sign_out_page.destroy()
+            import main
         elif group_selector.get() == 'Admin':
             so_date = datetime.now().date().strftime('%Y-%m-%d')
             so_time = datetime.now().time().strftime('%H:%M:%S')
@@ -136,6 +137,7 @@ class SignOut(object):
             lifechoices_db.commit()
             messagebox.showinfo('Sign Out successful', 'Enjoy the rest of your day!')
             sign_out_page.destroy()
+            import main
         elif group_selector.get() == 'Visitor':
             so_date = datetime.now().date().strftime('%Y-%m-%d')
             so_time = datetime.now().time().strftime('%H:%M:%S')
@@ -150,6 +152,7 @@ class SignOut(object):
             lifechoices_db.commit()
             messagebox.showinfo('Sign Out successful', 'Enjoy the rest of your day!')
             sign_out_page.destroy()
+            import main
 
 
 signOut = SignOut()
